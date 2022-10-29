@@ -1,12 +1,7 @@
-import os.path
 from io import StringIO
-from tkinter.filedialog import askopenfile
 
 import streamlit as st
-from localStoragePy import localStoragePy
-
-import pickle
-import pandas as pd
+from streamlit_ace import st_ace
 
 st.title("Stack Overflow Auto-Search Tool")
 
@@ -17,17 +12,8 @@ from subprocess import Popen, PIPE
 import requests
 import webbrowser
 
-#
-
-
-# uploaded_file = st.file_uploader("Choose a file")
-
-
-# def openFile():
-#     global filePath
-#     uploaded_file = askopenfile(mode='r')
-#     filePath = uploaded_file.name
-#     print(uploaded_file)
+code = ""
+string_data =""
 
 uploaded_file = st.file_uploader('File upload')
 
@@ -44,13 +30,25 @@ if uploaded_file is not None:
      # To read file as string:
      string_data = stringio.read()
      st.write(string_data)
-     st.write(os.path.abspath("uploaded_file"))
-     st.write("file - ",uploaded_file)
 
     # Can be used wherever a "file-like" object is accepted:
     # dataframe = pd.read_csv(uploaded_file)
     # st.write(dataframe)
 
+first,second = st.columns(2)
+
+with first:
+    code = st_ace()
+
+with second:
+    st.write(code)
+
+def creating2File(code):
+    p = open("test.py","w")
+    p.write(code)
+    p.close()
+    code="code"
+    st.write(code)
 
 def getData(cmd):
     cmd_list = cmd.split()
@@ -80,15 +78,29 @@ def get_urls(json_dict):
 
 def creatingFile(string_data):
     f=open('test.py','w')
-    f.write(string_data)
+    f.write(string_data)  
     f.close()
+    string_data="string_data"
+    st.write(string_data)
 
         
 
 
 def autoSearch():
     if __name__ == "__main__":
-     creatingFile(string_data)
+
+     if(len(code) != 0 ) or (len(string_data) != 0):
+        if(len(string_data)==0):
+            creating2File(code)
+            st.write(code)
+            
+        else:
+            creatingFile(string_data)
+            st.write(string_data)
+
+     else:
+        st.write("Please upload a file or enter your text on text editor")
+
      out, err = getData("python test.py")
      print("python {}".format(uploaded_file))
      err = err.decode("utf-8").strip().split("\r\n")[-1]
@@ -105,9 +117,5 @@ def autoSearch():
         get_urls(json3)
     else:
         print("No err")
-# print(autoSearch)
-
-# def keyShort(event):)
-#     autoSearch()
 
 st.button("Search", on_click=autoSearch)
